@@ -46,7 +46,7 @@ server.listen(port, async () => {
     const host = process.env.DB_HOST;
     const db = process.env.DB_NAME;
 
-    // await mongoose.connect(`mongodb://${host}/${db}`);
+    await mongoose.connect(`mongodb://${host}/${db}`);
 
     console.log('MongoDB is connected');
   } catch (err) {

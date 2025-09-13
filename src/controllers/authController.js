@@ -8,6 +8,7 @@ const generateTokens = require('../utils/generateTokens');
 exports.signUp = (req, res) => {
 
     const { email, password, username } = req.body;
+    // return console.log(req.body)
 
     if (!email || !password || !username) {
         return res.status(200).json({ mes: "Please fill all the fields", status: "warning" });
@@ -50,10 +51,21 @@ exports.signIn = (req, res) => {
             const Token = generateTokens(user);
 
             return res.json({
-                token: "Bearer " + Token,
+                token: Token,
                 message: "Signed",
                 status: "success"
             });
         });
     });
 };
+
+exports.checkAuth = (req, res) => {
+    const user = req.user;
+    // console.log(req.user);
+    
+    return res.status(200).json({
+        user: user,
+        mes: "Checked",
+        status: "success"
+    })
+}
