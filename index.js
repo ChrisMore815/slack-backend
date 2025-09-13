@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
+app.use('/avatar', express.static('public/avatars'));
+
 require('./src/models/channel');
 require('./src/models/user');
 require('./src/models/message');
