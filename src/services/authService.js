@@ -1,5 +1,6 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-exports.loginByToken = (token) => {
-    return jwt.decode(token, { secret: process.env.SECRET });
+exports.loginByToken = async (token) => {
+    return await jwt.verify(token, process.env.SECRET);
 }

@@ -18,8 +18,9 @@ exports.readOne = async (id) => {
     return user;
 }
 
-exports.update = (id, updateUserDto) => {
-    return User.findByIdAndUpdate(id, updateUserDto);
+exports.update = async (id, updateUserDto) => {
+    await User.updateOne({ _id: id }, updateUserDto);
+    return User.findById(id);
 }
 
 exports.delete = (id) => {
