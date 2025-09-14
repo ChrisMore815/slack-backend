@@ -14,6 +14,10 @@ const channelSchema = mongoose.Schema(
         members: {
             type: [mongoose.Schema.Types.ObjectId],
             ref: "users",
+        },
+        isDm: {
+            type: Boolean,
+            default: "false"
         }
     },
     {

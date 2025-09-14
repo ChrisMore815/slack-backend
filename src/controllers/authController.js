@@ -7,10 +7,10 @@ const generateTokens = require('../utils/generateTokens');
 //signUp
 exports.signUp = (req, res) => {
 
-    const { email, password, username } = req.body;
+    const { email, password, username, status } = req.body;
     // return console.log(req.body)
 
-    if (!email || !password || !username) {
+    if (!email || !password || !username || !status) {
         return res.status(200).json({ mes: "Please fill all the fields", status: "warning" });
     }
     User.findOne({ email: email }).then((user) => {
@@ -20,6 +20,7 @@ exports.signUp = (req, res) => {
         bcrypt.hash(password, 10, (err, hash) => {
             const user = new User({
                 email,
+                status,
                 username,
                 password: hash,
             });
@@ -61,8 +62,8 @@ exports.signIn = (req, res) => {
 
 exports.checkAuth = (req, res) => {
     const user = req.user;
-    // console.log(req.user);
-    
+    console.log(req.user);
+
     return res.status(200).json({
         user: user,
         mes: "Checked",
