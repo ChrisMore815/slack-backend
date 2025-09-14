@@ -62,7 +62,6 @@ exports.signIn = (req, res) => {
 
 exports.checkAuth = (req, res) => {
     const user = req.user;
-    console.log(req.user);
 
     return res.status(200).json({
         user: user,
