@@ -33,11 +33,10 @@ exports.read = async (socket, data) => {
 
 exports.update = async (socket, data) => {
     try {
-        const channel = await channelService.update(socket.user.id, data.id, data.channel);
-        sendToUsers(socket.socketList, channel.members, `${REQUEST.CHANNEL}_${METHOD.UPDATE}`, STATUS.ON, channel);
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.UPDATE}`, STATUS.SUCCESS, data);
+        const channel = await channelService.update(data);
+        sendToUsers(socket.socketList, channel.members, socketEvents.UPDATECHANNEL, STATUS.ON, channel);
     } catch (err) {
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.UPDATE}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.UPDATECHANNEL, STATUS.FAILED, { ...data, message: err.message });
     }
 }
 

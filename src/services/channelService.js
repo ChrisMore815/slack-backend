@@ -20,14 +20,12 @@ exports.readOne = async (id) => {
     return channel;
 }
 
-exports.update = async (userId, id, updateChannelDto) => {
-    const channel = await Channel.findById(id);
-    if (channel.creator != userId)
-        throw new Error('User has no permission to update this channel');
+exports.update = async (data) => {
+    const channel = await Channel.findById(data._id);
     if (!channel)
         throw new Error('Not found channel');
-    await Channel.findByIdAndUpdate(id, updateChannelDto);
-    return this.readOne(id);
+    await Channel.findByIdAndUpdate({ _id: data._id }, data);
+    return this.readOne(data._id);
 }
 
 exports.delete = async (id) => {
