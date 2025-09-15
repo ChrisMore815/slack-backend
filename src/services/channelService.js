@@ -30,11 +30,6 @@ exports.update = async (userId, id, updateChannelDto) => {
     return this.readOne(id);
 }
 
-exports.delete = async (userId, id) => {
-    const channel = await Channel.findById(id);
-    if (channel.creator != userId)
-        throw new Error('User has no permission to update this channel');
-    if (!channel)
-        throw new Error('Not found channel');
-    return Channel.findByIdAndDelete(id);
+exports.delete = async (id) => {
+    const result = await Channel.findByIdAndDelete(id);
 }

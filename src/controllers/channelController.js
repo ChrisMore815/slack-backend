@@ -43,10 +43,11 @@ exports.update = async (socket, data) => {
 
 exports.delete = async (socket, data) => {
     try {
-        const channel = await channelService.delete(socket.user.id, data.id);
-        sendToUsers(socket.socketList, channel.members, `${REQUEST.CHANNEL}_${METHOD.DELETE}`, STATUS.ON, data);
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.DELETE}`, STATUS.SUCCESS, data);
+        // console.log(data)
+        const channel = await channelService.readOne(data)
+        await channelService.delete(data);
+        sendToUsers(socket.socketList, channel.members, socketEvents.DELETECHANNEL, STATUS.ON);
     } catch (err) {
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.DELETE}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.DELETECHANNEL, STATUS.FAILED, { ...data, message: err.message });
     }
 }
