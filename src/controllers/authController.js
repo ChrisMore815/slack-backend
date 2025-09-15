@@ -8,7 +8,6 @@ const generateTokens = require('../utils/generateTokens');
 exports.signUp = (req, res) => {
 
     const { email, password, username, status } = req.body;
-    // return console.log(req.body)
 
     if (!email || !password || !username || !status) {
         return res.status(200).json({ mes: "Please fill all the fields", status: "warning" });

@@ -2,16 +2,22 @@ const messageService = require('../services/messageService');
 const channelService = require('../services/channelService');
 const { sendToUsers } = require('../utils/chat');
 const { STATUS, REQUEST, METHOD } = require('../constants/chat');
+const socketEvents = require('../constants/socketEvents');
 
 exports.create = async (socket, data) => {
     try {
-        const message = await messageService.create({ sender: socket.user.id, ...data });
-        const channel = await channelService.readOne(message.channel);
-        sendToUsers(socket.socketList, channel.members, `${REQUEST.MESSAGE}_${METHOD.CREATE}`, STATUS.ON, message);
-        if (data.parent) {
-            sendToUsers(socket.socketList, channel.members, `${REQUEST.MESSAGE}_${METHOD.UPDATE}`, STATUS.ON, await messageService.readOne(data.parent));
+        const message = await messageService.create({ ...data });
+        const curData = await channelService.readOne(message.channelId);
+        if (curData.ch.isDm == false) {
+            let temp = [];
+            curData.ch.members.forEach((member) => temp.push(member._id));
+            sendToUsers(socket.socketList, temp, socketEvents.CREATEMESSAGE, STATUS.ON, curData.msg);
+        } else {
+            sendToUsers(socket.socketList, message.receivers, socketEvents.CREATEMESSAGE, STATUS.ON, curData.msg);
         }
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.CREATE}`, STATUS.SUCCESS, data);
+        // if (data.parentId) {
+        //     sendToUsers(socket.socketList, channel.members, `${REQUEST.MESSAGE}_${METHOD.UPDATE}`, STATUS.ON, await messageService.readOne(data.parent));
+        // }
     } catch (err) {
         console.error(err);
         socket.emit(`${REQUEST.MESSAGE}_${METHOD.CREATE}`, STATUS.FAILED, { ...data, message: err.message });
@@ -20,10 +26,11 @@ exports.create = async (socket, data) => {
 
 exports.read = async (socket, data) => {
     try {
+        console.log(data)
         const messages = await messageService.read(data);
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.READ}`, STATUS.ON, { ...data, messages });
+        socket.emit(socketEvents.READALLMESSAGE, STATUS.ON, { ...data, messages });
     } catch (err) {
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.READ}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.READALLMESSAGE, STATUS.FAILED, { ...data, message: err.message });
     }
 }
 

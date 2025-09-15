@@ -2,17 +2,18 @@ const { model } = require('mongoose');
 
 const Message = model('messages');
 
-exports.create = (createMessageDto) => {
+exports.create = async (createMessageDto) => {
     const message = new Message(createMessageDto);
-    return message.save();
+    return await message.save();
 }
 
 exports.read = async (data) => {
+    console.log(data);
     const messages = await Message.find(data);
-    if (data.parent == null) {
-        const children = await Message.find().in('parent', messages.map(message => message.id));
+    if (data.parentId == null) {
+        const children = await Message.find().in('parent', messages.map(message => message._id));
         return messages.map((message) => {
-            const childCount = children.filter(child => child.parent == message.id).length;
+            const childCount = children.filter(child => child.parentId == message._id).length;
             message.childCount = childCount;
             return message;
         });

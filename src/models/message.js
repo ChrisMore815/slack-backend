@@ -7,28 +7,28 @@ const messageSchema = mongoose.Schema(
             ref: "users",
             required: true,
         },
-        channel: {
+        channelId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "channels",
             required: true,
         },
-        receivers: {
-            type: [mongoose.Schema.Types.ObjectId],
+        receivers: [{
+            type: mongoose.Schema.Types.ObjectId,
             ref: "users",
-        },
+        }],
         message: {
             type: String,
             required: true,
         },
-        files: {
-            type: [String],
-        },
+        files: [{
+            type: String,
+        }],
         emoticons: [
             {
-                creator: {
+                creator: [{
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "users",
-                },
+                }],
                 code: {
                     type: String
                 }
@@ -42,7 +42,7 @@ const messageSchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
-        parent: {
+        parentid: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "messages",
             default: null

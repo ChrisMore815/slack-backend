@@ -15,8 +15,8 @@ exports.create = async (socket, data) => {
 
 exports.readOne = async (socket, data) => {
     try {
-        const channel = await channelService.readOne(data);
-        socket.emit(socketEvents.READCHANNEL, STATUS.ON, channel)
+        const curChannelData = await channelService.readOne(data);
+        socket.emit(socketEvents.READCHANNEL, STATUS.ON, curChannelData)
     } catch (error) {
         socket.emit(socketEvents.READCHANNEL, STATUS.FAILED, { ...data, messsage: err.message })
     }
@@ -42,7 +42,6 @@ exports.update = async (socket, data) => {
 
 exports.delete = async (socket, data) => {
     try {
-        // console.log(data)
         const channel = await channelService.readOne(data)
         await channelService.delete(data);
         sendToUsers(socket.socketList, channel.members, socketEvents.DELETECHANNEL, STATUS.ON);

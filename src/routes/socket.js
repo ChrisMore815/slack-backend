@@ -43,8 +43,10 @@ const onConnect = (socket) => {
     socket.on(socketEvents.READALLCHANNEL, (data) => authMdr(socket, data, channelCtr.read));
     socket.on(socketEvents.CREATECHANNEL, (data) => authMdr(socket, data, channelCtr.create))
     socket.on(socketEvents.READCHANNEL, (data) => authMdr(socket, data, channelCtr.readOne));
-    socket.on(socketEvents.UPDATECHANNEL, (data) => authMdr(socket, data, channelCtr.update))
-    socket.on(socketEvents.DELETECHANNEL, (data) => authMdr(socket, data, channelCtr.delete))
+    socket.on(socketEvents.UPDATECHANNEL, (data) => authMdr(socket, data, channelCtr.update));
+    socket.on(socketEvents.DELETECHANNEL, (data) => authMdr(socket, data, channelCtr.delete));
+
+    socket.on(socketEvents.CREATEMESSAGE, (data) => authMdr(socket, data, messageCtr.create))
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.CREATE}`, (data) => authMdr(socket, data, channelCtr.create));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.READ}`, (data) => authMdr(socket, data, channelCtr.read));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.UPDATE}`, (data) => authMdr(socket, data, channelCtr.update));

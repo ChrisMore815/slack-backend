@@ -1,6 +1,7 @@
 const { model } = require('mongoose');
 
 const Channel = model('channels');
+const Message = model('messages');
 
 exports.create = async (createChannelDto) => {
     if (createChannelDto.members.length < 2)
@@ -15,9 +16,10 @@ exports.read = async (userId) => {
 
 exports.readOne = async (id) => {
     const channel = await Channel.findById(id).populate('members');
+    const messages = await Message.find({ channelId: channel._id }).populate('sender');
     if (!channel)
         throw new Error('Not found channel');
-    return channel;
+    return {msg: messages, ch: channel};
 }
 
 exports.update = async (data) => {

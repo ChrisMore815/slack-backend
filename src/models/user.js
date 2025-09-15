@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
     {
+        avatar: {
+            type: String,
+            default: 'default.gif'
+        },
         username: {
             type: String,
             required: true,
