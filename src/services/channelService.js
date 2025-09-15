@@ -2,18 +2,15 @@ const { model } = require('mongoose');
 
 const Channel = model('channels');
 
-exports.create = (createChannelDto) => {
-    if (!createChannelDto.members.some(member => member == createChannelDto.creator)) {
-        createChannelDto.members = [...createChannelDto.members, createChannelDto.creator];
-    }
+exports.create = async (createChannelDto) => {
     if (createChannelDto.members.length < 2)
         throw new Error('Please select more than two members');
     const channel = new Channel(createChannelDto);
-    return channel.save();
+    return await channel.save();
 }
 
-exports.read = (userId) => {
-    return Channel.find({ members: { $in: [userId] } }).populate('members');
+exports.read = async (userId) => {
+    return await Channel.find({ members: { $in: [userId] } }).populate('members');
 }
 
 exports.readOne = async (id) => {

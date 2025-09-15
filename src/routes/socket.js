@@ -15,16 +15,16 @@ const authMdr = async (socket, data, next) => {
             throw new Error('Unauthorized');
         const user = await authService.loginByToken(token);
         if (user) {
-            if(userList.find(v=>v._id==user._id)){
+            if (userList.find(v => v._id == user._id)) {
 
-            }else{
+            } else {
                 userList.push(user);
             }
             if (!socketList[user._id]) {
                 socketList[user._id] = [];
             }
             socketList[user._id].push(socket);
-        }else return;
+        } else return;
         socket.user = user;
         await next(socket, data);
     } catch (err) {
@@ -36,7 +36,13 @@ const onConnect = (socket) => {
     console.log(`Socket ${socket.id} is connected`);
     socket.socketList = socketList;
     socket.userList = userList;
-    socket.on(`${socketEvents.CHANGESTATUS}`, (data) => authMdr(socket, data, userCtr.changeStatus))
+
+    socket.on("disconnect", () => { console.log(`Socket ${socket.id} is disconnected`); })
+    socket.on(socketEvents.CHANGESTATUS, (data) => authMdr(socket, data, userCtr.changeStatus));
+
+    socket.on(socketEvents.READALLCHANNEL, (data) => authMdr(socket, data, channelCtr.read));
+    socket.on(socketEvents.CREATECHANNEL, (data) => authMdr(socket, data, channelCtr.create))
+    socket.on(socketEvents.READCHANNEL, (data) => authMdr(socket, data, channelCtr.readOne));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.CREATE}`, (data) => authMdr(socket, data, channelCtr.create));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.READ}`, (data) => authMdr(socket, data, channelCtr.read));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.UPDATE}`, (data) => authMdr(socket, data, channelCtr.update));

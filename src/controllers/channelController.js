@@ -1,27 +1,33 @@
 const channelService = require('../services/channelService');
 const { sendToUsers } = require('../utils/chat');
 const { STATUS, REQUEST, METHOD } = require('../constants/chat');
+const socketEvents = require('../constants/socketEvents');
 
 exports.create = async (socket, data) => {
     try {
-        const channel = await channelService.create({
-            creator: socket.user.id,
-            ...data,
-        });
-        sendToUsers(socket.socketList, channel.members, `${REQUEST.CHANNEL}_${METHOD.CREATE}`, STATUS.ON, channel);
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.CREATE}`, STATUS.SUCCESS);
+        const channel = await channelService.create({ ...data });
+        sendToUsers(socket.socketList, channel.members, socketEvents.CREATECHANNEL, STATUS.ON, channel);
     } catch (err) {
         console.error(err);
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.CREATE}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.CREATECHANNEL, STATUS.FAILED, { ...data, message: err.message });
+    }
+}
+
+exports.readOne = async (socket, data) => {
+    try {
+        const channel = await channelService.readOne(data);
+        socket.emit(socketEvents.READCHANNEL, STATUS.ON, channel)
+    } catch (error) {
+        socket.emit(socketEvents.READCHANNEL, STATUS.FAILED, { ...data, messsage: err.message })
     }
 }
 
 exports.read = async (socket, data) => {
     try {
-        const channels = await channelService.read(socket.user.id);
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.READ}`, STATUS.ON, channels);
+        const channels = await channelService.read(socket.user._id);
+        socket.emit(socketEvents.READALLCHANNEL, STATUS.ON, channels);
     } catch (err) {
-        socket.emit(`${REQUEST.CHANNEL}_${METHOD.READ}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.READALLCHANNEL, STATUS.FAILED, { ...data, message: err.message });
     }
 }
 
