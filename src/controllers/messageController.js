@@ -26,7 +26,6 @@ exports.create = async (socket, data) => {
 
 exports.read = async (socket, data) => {
     try {
-        console.log(data)
         const messages = await messageService.read(data);
         socket.emit(socketEvents.READALLMESSAGE, STATUS.ON, { ...data, messages });
     } catch (err) {
@@ -36,23 +35,25 @@ exports.read = async (socket, data) => {
 
 exports.update = async (socket, data) => {
     try {
-        const message = await messageService.update(socket.user.id, data.id, data.message);
-        const channel = await channelService.readOne(message.channel);
-        sendToUsers(socket.socketList, channel.members, `${REQUEST.MESSAGE}_${METHOD.UPDATE}`, STATUS.ON, message);
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.UPDATE}`, STATUS.SUCCESS, data);
+        const message = await messageService.update(data.id, data.message);
+        const curData = await channelService.readOne(message.channelId);
+        let temp = [];
+        curData.ch.members.forEach((member) => temp.push(member._id));
+        sendToUsers(socket.socketList, temp, socketEvents.UPDATEMESSAGE, STATUS.ON, curData.msg);
     } catch (err) {
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.UPDATE}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.UPDATEMESSAGE, STATUS.FAILED, { ...data, message: err.message });
     }
 }
 
 exports.delete = async (socket, data) => {
     try {
-        const message = await messageService.delete(socket.user.id, data.id);
-        const channel = await channelService.readOne(message.channel);
-        sendToUsers(socket.socketList, channel.members, `${REQUEST.MESSAGE}_${METHOD.DELETE}`, STATUS.ON, data);
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.DELETE}`, STATUS.SUCCESS, data);
+        const message = await messageService.delete(data);
+        const curData = await channelService.readOne(message.channelId);
+        let temp = [];
+        curData.ch.members.forEach((member) => temp.push(member._id));
+        sendToUsers(socket.socketList, temp, socketEvents.DELETEMESSAGE, STATUS.ON, curData.msg);
     } catch (err) {
-        socket.emit(`${REQUEST.MESSAGE}_${METHOD.DELETE}`, STATUS.FAILED, { ...data, message: err.message });
+        socket.emit(socketEvents.DELETEMESSAGE, STATUS.FAILED, { ...data, message: err.message });
     }
 }
 

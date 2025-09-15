@@ -25,28 +25,27 @@ exports.readOne = async (id) => {
     const message = await Message.findById(id);
     if (!message)
         throw new Error('Not found message');
-    const childCount = await Message.find({ parent: id }).count();
-    message.childCount = childCount;
+    // const childCount = await Message.find({ parentId: id }).count();
+    // message.childCount = childCount;
     return message;
 }
 
-exports.update = async (userId, id, updateMessageDto) => {
-    const message = await Message.findById(id);
-    if (!message)
-        throw new Error('Not found message');
-    if (message.sender != userId)
-        throw new Error('User has no permission to update this message');
-    await Message.findByIdAndUpdate(id, updateMessageDto);
-    return this.readOne(id);
+exports.update = async (id, updateMessageDto) => {
+    // const message = await Message.findById(id);
+    // if (!message)
+    //     throw new Error('Not found message');
+    // if (message.sender != userId)
+    //     throw new Error('User has no permission to update this message');
+
+    const result = await Message.updateOne({ _id: id }, { ...updateMessageDto });
+    const message = await this.readOne(id);
+    return message
 }
 
-exports.delete = async (userId, id) => {
+exports.delete = async (id) => {
     const message = await Message.findById(id);
-    if (!message)
-        throw new Error('Not found message');
-    if (message.sender != userId)
-        throw new Error('User has no permission to update this message');
-    return Message.findByIdAndDelete(id);
+    await Message.findByIdAndDelete({ _id: id });
+    return message;
 }
 
 exports.emoticon = async (id, createEmoticonDto) => {
