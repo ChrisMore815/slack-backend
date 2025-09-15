@@ -14,7 +14,7 @@ exports.read = async (userId) => {
 }
 
 exports.readOne = async (id) => {
-    const channel = await Channel.findById(id);
+    const channel = await Channel.findById(id).populate('members');
     if (!channel)
         throw new Error('Not found channel');
     return channel;
