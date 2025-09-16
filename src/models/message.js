@@ -25,7 +25,7 @@ const messageSchema = mongoose.Schema(
         }],
         emoticons: [
             {
-                creator: [{
+                recommenders: [{
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "users",
                 }],
@@ -34,10 +34,10 @@ const messageSchema = mongoose.Schema(
                 }
             }
         ],
-        isPined: {
-            type: Boolean,
-            default: false
-        },
+        isPined: [{
+            type: String,
+            default: ""
+        }],
         isdraft: {
             type: Boolean,
             default: false

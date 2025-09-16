@@ -14,15 +14,11 @@ exports.readAll = async (data) => {
 
 exports.readOne = async (id) => {
     const message = await Message.findById(id);
-    if (!message)
-        throw new Error('Not found message');
-    const childCount = await Message.find({ parentId: { $in: [id] } }).count();
-    message.childCount = childCount;
     return message;
 }
 
 exports.update = async (id, updateMessageDto) => {
-    const result = await Message.updateOne({ _id: id }, { ...updateMessageDto });
+    await Message.updateOne({ _id: id }, { ...updateMessageDto });
     return await this.readOne(id);
 }
 
@@ -48,6 +44,5 @@ exports.emoticon = async (id, createEmoticonDto) => {
 }
 
 exports.readParent = async (id) => {
-    const messages = await Message.find({ parentId: { $in: [id] } });
-    return messages
+    return await Message.find({ parentId: { $in: [id] } });
 }

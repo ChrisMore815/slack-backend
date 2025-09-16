@@ -24,13 +24,21 @@ exports.readAll = async (socket, data) => {
     }
 }
 
+exports.readOne = async (socket, data) => {
+    try {
+        const messages = await messageService.readParent(data);
+        socket.emit(socketEvents.READMESSAGE, STATUS.ON, messages)
+    } catch (error) {
+
+    }
+}
+
 exports.update = async (socket, data) => {
     try {
+        console.log(data)
         const message = await messageService.update(data.id, data.message);
-        const curData = await channelService.readOne(message.channelId);
-        let temp = [];
-        curData.ch.members.forEach((member) => temp.push(member._id));
-        sendToUsers(socket.socketList, temp, socketEvents.UPDATEMESSAGE, STATUS.ON, curData.msg);
+        const channel = await channelService.readOne(message.channelId);
+        sendToUsers(socket.socketList, channel.members, socketEvents.UPDATEMESSAGE, STATUS.ON, message);
     } catch (err) {
         socket.emit(socketEvents.UPDATEMESSAGE, STATUS.FAILED, { ...data, message: err.message });
     }
@@ -39,8 +47,8 @@ exports.update = async (socket, data) => {
 exports.delete = async (socket, data) => {
     try {
         const message = await messageService.delete(data);
-        const curData = await channelService.readOne(message.channelId);
-        sendToUsers(socket.socketList, temp, socketEvents.DELETEMESSAGE, STATUS.ON, curData.msg);
+        const channel = await channelService.readOne(message.channelId);
+        sendToUsers(socket.socketList, channel.members, socketEvents.DELETEMESSAGE, STATUS.ON, message);
     } catch (err) {
         socket.emit(socketEvents.DELETEMESSAGE, STATUS.FAILED, { ...data, message: err.message });
     }

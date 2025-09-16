@@ -23,7 +23,8 @@ const authMdr = async (socket, data, next) => {
             if (!socketList[user._id]) {
                 socketList[user._id] = [];
             }
-            socketList[user._id].push(socket);
+            if (socketList[user._id].find(v=>v.id == socket.id)) { }
+            else socketList[user._id].push(socket);
         } else return;
         socket.user = user;
         await next(socket, data);
@@ -48,9 +49,10 @@ const onConnect = (socket) => {
 
     socket.on(socketEvents.READALLMESSAGE, (data) => authMdr(socket, data, messageCtr.readAll))
     socket.on(socketEvents.CREATEMESSAGE, (data) => authMdr(socket, data, messageCtr.create));
-    // socket.on(socketEvents.UPDATEMESSAGE, (data) => authMdr(socket, data, messageCtr.update));
-    // socket.on(socketEvents.DELETEMESSAGE, (data) => authMdr(socket, data, messageCtr.delete));
-    
+    socket.on(socketEvents.READMESSAGE, (data) => authMdr(socket, data, messageCtr.readOne));
+    socket.on(socketEvents.UPDATEMESSAGE, (data) => authMdr(socket, data, messageCtr.update));
+    socket.on(socketEvents.DELETEMESSAGE, (data) => authMdr(socket, data, messageCtr.delete));
+
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.CREATE}`, (data) => authMdr(socket, data, channelCtr.create));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.READ}`, (data) => authMdr(socket, data, channelCtr.read));
     // socket.on(`${REQUEST.CHANNEL}_${METHOD.UPDATE}`, (data) => authMdr(socket, data, channelCtr.update));
