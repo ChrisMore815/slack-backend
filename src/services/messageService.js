@@ -7,17 +7,8 @@ exports.create = async (createMessageDto) => {
     return await message.save();
 }
 
-exports.read = async (data) => {
-    console.log(data);
-    const messages = await Message.find(data);
-    if (data.parentId == null) {
-        const children = await Message.find().in('parent', messages.map(message => message._id));
-        return messages.map((message) => {
-            const childCount = children.filter(child => child.parentId == message._id).length;
-            message.childCount = childCount;
-            return message;
-        });
-    }
+exports.readAll = async (data) => {
+    const messages = await Message.find({ channelId: { $in: [data] } });
     return messages;
 }
 
@@ -25,26 +16,19 @@ exports.readOne = async (id) => {
     const message = await Message.findById(id);
     if (!message)
         throw new Error('Not found message');
-    // const childCount = await Message.find({ parentId: id }).count();
-    // message.childCount = childCount;
+    const childCount = await Message.find({ parentId: { $in: [id] } }).count();
+    message.childCount = childCount;
     return message;
 }
 
 exports.update = async (id, updateMessageDto) => {
-    // const message = await Message.findById(id);
-    // if (!message)
-    //     throw new Error('Not found message');
-    // if (message.sender != userId)
-    //     throw new Error('User has no permission to update this message');
-
     const result = await Message.updateOne({ _id: id }, { ...updateMessageDto });
-    const message = await this.readOne(id);
-    return message
+    return await this.readOne(id);
 }
 
 exports.delete = async (id) => {
     const message = await Message.findById(id);
-    await Message.findByIdAndDelete({ _id: id });
+    await Message.deleteOne({ _id: id });
     return message;
 }
 
@@ -61,4 +45,9 @@ exports.emoticon = async (id, createEmoticonDto) => {
         emoticons: updatedEmoticons,
     });
     return this.readOne(id);
+}
+
+exports.readParent = async (id) => {
+    const messages = await Message.find({ parentId: { $in: [id] } });
+    return messages
 }

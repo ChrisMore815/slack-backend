@@ -42,7 +42,7 @@ const messageSchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
-        parentid: {
+        parentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "messages",
             default: null

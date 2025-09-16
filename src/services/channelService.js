@@ -4,8 +4,6 @@ const Channel = model('channels');
 const Message = model('messages');
 
 exports.create = async (createChannelDto) => {
-    if (createChannelDto.members.length < 2)
-        throw new Error('Please select more than two members');
     const channel = new Channel(createChannelDto);
     return await channel.save();
 }
@@ -15,21 +13,17 @@ exports.read = async (userId) => {
 }
 
 exports.readOne = async (id) => {
-    const channel = await Channel.findById(id).populate('members');
-    const messages = await Message.find({ channelId: channel._id }).populate('sender');
-    if (!channel)
-        throw new Error('Not found channel');
-    return {msg: messages, ch: channel};
+    const channel = await Channel.findById(id);
+    return channel;
 }
 
 exports.update = async (data) => {
-    const channel = await Channel.findById(data._id);
-    if (!channel)
-        throw new Error('Not found channel');
-    await Channel.findByIdAndUpdate({ _id: data._id }, data);
+    await Channel.updateOne({ _id: data._id }, data);
     return this.readOne(data._id);
 }
 
 exports.delete = async (id) => {
-    const result = await Channel.findByIdAndDelete(id);
+    const channel = await Channel.findById(id);
+    await Channel.findByIdAndDelete(id);
+    return channel;
 }
