@@ -12,38 +12,48 @@ const messageSchema = mongoose.Schema(
             ref: "channels",
             required: true,
         },
-        receivers: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "users",
-        }],
+        receivers: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "users",
+            },
+        ],
         message: {
             type: String,
             required: true,
         },
-        files: [{
-            type: String,
-        }],
-        emoticons: {
-            recommenders: [{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "users",
-            }],
-            code: {
-                type: String
-            }
-        },
-        isPined: [{
-            type: String,
-            default: ""
-        }],
+        files: [
+            {
+                type: String,
+            },
+        ],
+        emoticons: [
+            {
+                recommenders: [
+                    {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "users",
+                    },
+                ],
+                code: {
+                    type: String,
+                },
+            },
+        ],
+        isPined: [
+            {
+                type: String,
+                default: "",
+            },
+        ],
         isdraft: {
             type: Boolean,
-            default: false
+            default: false,
         },
         parentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "messages",
-            default: null
+            default: null,
         },
         childCount: Number,
     },
