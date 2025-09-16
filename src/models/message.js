@@ -23,17 +23,15 @@ const messageSchema = mongoose.Schema(
         files: [{
             type: String,
         }],
-        emoticons: [
-            {
-                recommenders: [{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "users",
-                }],
-                code: {
-                    type: String
-                }
+        emoticons: {
+            recommenders: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "users",
+            }],
+            code: {
+                type: String
             }
-        ],
+        },
         isPined: [{
             type: String,
             default: ""
