@@ -35,7 +35,6 @@ exports.readOne = async (socket, data) => {
 
 exports.update = async (socket, data) => {
     try {
-        console.log(data)
         const message = await messageService.update(data.id, data.message);
         const channel = await channelService.readOne(message.channelId);
         sendToUsers(socket.socketList, channel.members, socketEvents.UPDATEMESSAGE, STATUS.ON, message);
